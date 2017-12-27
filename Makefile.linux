@@ -1,0 +1,62 @@
+# possibly modifiable nifties
+PROGRAM = detritus
+C++ = g++	# use GNU C++ compiler
+C++-FLAGS = -c -Wall -Isrc -DLINUX -Os
+LINKER = g++	# use GNU C++ as linker 
+LINKER-FLAGS = -lSDLmain -lSDL -lSDL_image -lSDL_ttf -lGL -lGLU -lalut -lopenal -lsqlite3 -Isrc -dead_strip -gfull -o	 # flags for linker
+RM = rm -f         # how to remove files
+MAKE = make          # name of make utility
+
+OBJS = src/asteroid.o \
+	src/bullet.o \
+	src/enemy.o \
+	src/exhaust.o \
+	src/explosion.o \
+	src/font.o \
+	src/game.o \
+	src/geometry.o \
+	src/glsdl.o \
+	src/GLTexture.o \
+	src/highscores.o \
+	src/Model_3DS.o \
+	src/powerup.o \
+	src/shard.o \
+	src/ship.o \
+	src/skybox.o \
+	src/soundlib.o \
+	src/state.o \
+	src/thing.o \
+	src/timer.o \
+	src/upgrade.o \
+	src/os.o
+
+TARGET = detritus        # name of executable
+
+.IGNORE:	          # ignore problems (as far as possible)
+.SILENT:	          # don't echo commands executed
+.SUFFIXES:	        # get rid of predefined rules
+.SUFFIXES: .cpp .o
+
+$(TARGET): $(OBJS)
+	$(LINKER) $(LINKER-FLAGS) $@ $(OBJS)
+
+.cpp.o:
+	$(C++) $(C++-FLAGS) $< -o $@
+
+# remove object files and core (if any)
+clean:
+	$(RM) src/*.o core
+
+# remove object files, core dump, and executable (if any)
+distclean:
+	$(MAKE) clean
+	$(RM) $(TARGET)
+
+# remove object files, core dump, and executable (if any) and
+# make them again.
+again:
+	$(MAKE) distclean
+	$(MAKE) $(TARGET)
+
+run: $(TARGET)
+	./$(TARGET)

@@ -1,0 +1,69 @@
+EXECUTABLE=detritus
+CC=g++
+CFLAGS=-c -Wall -Isrc -DOSX -Os -I/Library/Frameworks/SDL.framework/Headers -I/System/Library/Frameworks/OpenGL.framework/Headers -I/System/Library/Frameworks/OpenAL.framework/Headers -I/Library/Frameworks/SDL_image.framework/Headers -I/Library/Frameworks/SDL_ttf.framework/Headers
+LDFLAGS=-framework SDL -framework Cocoa -framework OpenGL -framework OpenAL -framework sqlite3 -framework SDL_image -framework SDL_ttf -gfull
+
+RM = rm -f         # how to remove files
+MAKE = make          # name of make utility
+
+SOURCES = src/asteroid.cpp \
+	src/bullet.cpp \
+	src/enemy.cpp \
+	src/exhaust.cpp \
+	src/explosion.cpp \
+	src/font.cpp \
+	src/game.cpp \
+	src/geometry.cpp \
+	src/glsdl.cpp \
+	src/GLTexture.cpp \
+	src/highscores.cpp \
+	src/Model_3DS.cpp \
+	src/powerup.cpp \
+	src/shard.cpp \
+	src/ship.cpp \
+	src/skybox.cpp \
+	src/soundlib.cpp \
+	src/state.cpp \
+	src/thing.cpp \
+	src/timer.cpp \
+	src/upgrade.cpp \
+	src/os.cpp
+
+OBJECTS=$(SOURCES:.cpp=.o) src/SDLMain.o
+
+#.IGNORE:	          # ignore problems (as far as possible)
+#.SILENT:	          # don't echo commands executed
+
+all: $(SOURCES) $(EXECUTABLE) src/SDLMain.m
+	install_name_tool -change @rpath/SDL.framework/Versions/A/SDL @executable_path/../Frameworks/SDL.framework/Versions/A/SDL Detritus 
+	install_name_tool -change @rpath/SDL_image.framework/Versions/A/SDL_image @executable_path/../Frameworks/SDL_image.framework/Versions/A/SDL_image Detritus 
+	install_name_tool -change @rpath/SDL_ttf.framework/Versions/A/SDL_ttf @executable_path/../Frameworks/SDL_ttf.framework/Versions/A/SDL_ttf Detritus 
+	#install_name_tool -change /Library/Frameworks/SQLite3.framework/Versions/3/SQLite3 @executable_path/../Frameworks/SQLite3.framework/Versions/3/SQLite3 Detritus
+	install_name_tool -change /Library/Frameworks/SQLite3.framework/Versions/3/SQLite3 @executable_path/../Resources/libsqlite3.dylib Detritus
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+
+.m.o:
+	$(CC) $(CFLAGS) $< -o $@
+
+.cpp.o:
+	$(CC) $(CFLAGS) $< -o $@
+
+# remove object files and core (if any)
+clean:
+	$(RM) src/*.o core
+
+# remove object files, core dump, and executable (if any)
+distclean:
+	$(MAKE) clean
+	$(RM) $(TARGET)
+
+# remove object files, core dump, and executable (if any) and
+# make them again.
+again:
+	$(MAKE) distclean
+	$(MAKE) $(TARGET)
+
+run: $(TARGET)
+	./$(TARGET)

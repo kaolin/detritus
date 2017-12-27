@@ -1,0 +1,21 @@
+See full license/etc at http://www.erif.org/code/detritus/
+
+This needs the following packages (on Fedora):
+
+	freealut
+	mesa-libGL (or any other OpenGL implementation)
+	mesa-libGLU (or any other OpenGL GLU implementation)
+	openal
+	SDL
+	SDL_image
+	SDL_ttf
+	sqlite
+
+Note that you'll want the -devel versions to compile:
+
+	(freealut-devel, mesa-libGL-devel, etc...)
+
+No "make install" currently provided.  Just do a make and then
+run the executable in place.  "make run" is provided. :)
+
+OS X: make -f Makefile.osx will create a DMG

@@ -1,0 +1,92 @@
+VERSION=1.0.6
+EXECUTABLE=detritus
+#CC=g++-6
+#CC=clang++
+CC=g++
+CFLAGS=-c -Wall -Isrc -DOSX -Os -I/usr/local/include -I /usr/local/include/sdl -I /Users/kaolin/dev/0tools/SDK/sysroot/System/Library/Frameworks/OpenAL.framework/Headers
+#CFLAGS=-c -Wall -Isrc -DOSX -Os -I/Library/Frameworks/SDL.framework/Headers -I/System/Library/Frameworks/OpenGL.framework/Headers -I/System/Library/Frameworks/OpenAL.framework/Headers -I/Library/Frameworks/SDL_image.framework/Headers -I/Library/Frameworks/SDL_ttf.framework/Headers
+LDFLAGS=-framework Carbon -framework IOKit -framework ApplicationServices -framework Cocoa -L /usr/local/Cellar/sdl/1.2.15/lib/ -L /usr/local/Cellar/sdl_image/1.2.12_3/lib/ -L /usr/local/Cellar/sdl_ttf/2.0.11/lib/ -lSDL -lSDL_ttf -lSDL_image -lsqlite3 -framework OpenGL -framework OpenAL -gfull -framework CoreData
+
+RM = rm -rf         # how to remove files
+MAKE = make          # name of make utility
+
+SOURCES = src/asteroid.cpp \
+	src/bullet.cpp \
+	src/enemy.cpp \
+	src/exhaust.cpp \
+	src/explosion.cpp \
+	src/font.cpp \
+	src/game.cpp \
+	src/geometry.cpp \
+	src/glsdl.cpp \
+	src/GLTexture.cpp \
+	src/highscores.cpp \
+	src/Model_3DS.cpp \
+	src/powerup.cpp \
+	src/shard.cpp \
+	src/ship.cpp \
+	src/skybox.cpp \
+	src/soundlib.cpp \
+	src/state.cpp \
+	src/thing.cpp \
+	src/timer.cpp \
+	src/upgrade.cpp \
+	src/os.cpp
+
+OBJECTS=$(SOURCES:.cpp=.o) src/SDLMain.o
+
+#.IGNORE:	          # ignore problems (as far as possible)
+#.SILENT:	          # don't echo commands executed
+
+#        /usr/local/opt/sdl/lib/libSDL-1.2.0.dylib (compatibility version 12.0.0, current version 12.4.0)
+#        /usr/local/opt/sdl_ttf/lib/libSDL_ttf-2.0.0.dylib (compatibility version 11.0.0, current version 11.1.0)
+#        /usr/local/opt/sdl_image/lib/libSDL_image-1.2.0.dylib (compatibility version 9.0.0, current version 9.4.0)
+ 
+
+all: $(SOURCES) $(EXECUTABLE) src/SDLMain.m
+	#install_name_tool -change @rpath/SDL.framework/Versions/A/SDL @executable_path/../Frameworks/SDL.framework/Versions/A/SDL Detritus 
+	#install_name_tool -change @rpath/SDL_image.framework/Versions/A/SDL_image @executable_path/../Frameworks/SDL_image.framework/Versions/A/SDL_image Detritus 
+	#install_name_tool -change @rpath/SDL_ttf.framework/Versions/A/SDL_ttf @executable_path/../Frameworks/SDL_ttf.framework/Versions/A/SDL_ttf Detritus 
+	#install_name_tool -change /Library/Frameworks/SQLite3.framework/Versions/3/SQLite3 @executable_path/../Frameworks/SQLite3.framework/Versions/3/SQLite3 Detritus
+	#install_name_tool -change /Library/Frameworks/SQLite3.framework/Versions/3/SQLite3 @executable_path/../Resources/libsqlite3.dylib Detritus
+	install_name_tool -change /usr/local/opt/sdl/lib/libSDL-1.2.0.dylib @executable_path/../Resources/libSDL-1.2.0.dylib Detritus
+	install_name_tool -change /usr/local/opt/sdl_ttf/lib/libSDL_ttf-2.0.0.dylib @executable_path/../Resources/libSDL_ttf-2.0.0.dylib Detritus
+	install_name_tool -change /usr/local/opt/sdl_image/lib/libSDL_image-1.2.0.dylib @executable_path/../Resources/libSDL_image-1.2.0.dylib Detritus
+	mkdir -p Detritus.app/Contents/MacOS/
+	mkdir -p Detritus.app/Contents/Resources/
+	cp -f /usr/local/opt/sdl/lib/libSDL-1.2.0.dylib Detritus.app/Contents/Resources/
+	cp -f /usr/local/opt/sdl_ttf/lib/libSDL_ttf-2.0.0.dylib Detritus.app/Contents/Resources/
+	cp -f /usr/local/opt/sdl_image/lib/libSDL_image-1.2.0.dylib Detritus.app/Contents/Resources/
+	cp -f detritus Detritus.app/Contents/MacOS/
+	rm -rf distribute
+	mkdir distribute
+	ln -s /Applications distribute/
+	rsync -avp Detritus.app/ distribute/Detritus.app
+	hdiutil create -volname "Detritus" -srcfolder ./distribute -ov Detritus-$(VERSION).dmg
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+
+.m.o:
+	$(CC) $(CFLAGS) $< -o $@
+
+.cpp.o:
+	$(CC) $(CFLAGS) $< -o $@
+
+# remove object files and core (if any)
+clean:
+	$(RM) src/*.o core detritus distribute Detritus.app Detritus-*.dmg
+
+# remove object files, core dump, and executable (if any)
+distclean:
+	$(MAKE) clean
+	$(RM) $(TARGET)
+
+# remove object files, core dump, and executable (if any) and
+# make them again.
+again:
+	$(MAKE) distclean
+	$(MAKE) $(TARGET)
+
+run: $(TARGET)
+	./$(TARGET)

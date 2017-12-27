@@ -1,0 +1,5 @@
+detritus
+distribute
+src/*.o
+Detritus.app
+*.dmg

@@ -1,0 +1,27 @@
+#include <windows.h>
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+100     ICON    misc\game.ico
+/*GLUT_ICON ICON misc\game.ico*/
+
+1 VERSIONINFO
+FILEVERSION 1, 0, 6, 0
+PRODUCTVERSION 1, 0, 6, 0
+FILEFLAGSMASK 0
+FILEOS 0x40000
+FILETYPE 1
+{
+ BLOCK "StringFileInfo"
+ {
+  BLOCK "040904E4"
+  {
+   VALUE "Author", "Kaolin Fire"
+   VALUE "Website", "http://erif.org/code/detritus/"
+   VALUE "FileDescription", "Sphere-floating arcade shoot-em-up"
+   VALUE "FileVersion", "v1.0.6"
+   VALUE "LegalCopyright", "creative commons non-commercial/attribution: see website for details"
+   //VALUE "OriginalFilename", "detritus.cpp"
+   //VALUE "ProductName", "Detritus"
+   //VALUE "ProductVersion", "1.0"
+  }
+ }
+}

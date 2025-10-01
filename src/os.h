@@ -37,12 +37,14 @@ std::ostream * getErrorStream();
 #endif
 
 // SDL includes
-#include <SDL/SDL.h>
-#include <SDL/SDL_opengl.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
 
 #ifdef OSX
-#include <SDL_ttf.h>
-#include <SDL_image.h>
+#include <SDL2/SDL_main.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
+#include <OpenGL/glu.h>
 #include <al.h>
 #include <alc.h>
 //#include <MacOSX_OALExtensions.h>

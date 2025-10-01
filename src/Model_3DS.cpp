@@ -211,8 +211,9 @@ Model_3DS::~Model_3DS()
 
 }
 
-void Model_3DS::Load(char *name)
+void Model_3DS::Load(const char *name_in)
 {
+	char* name = strdup(name_in);
 	// holds the main chunk header
 	ChunkHeader main;
 

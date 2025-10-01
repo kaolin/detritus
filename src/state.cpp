@@ -191,11 +191,6 @@ bool State::load_files() {
 		return false;
 	}
 
-	SDL_Surface *icon = load_image(DATAPREFIX"data/images/icon2.png");
-	if (!icon) return false;
-	SDL_WM_SetIcon(icon,NULL);
-
-	
 	/* Sound */
 	char* SOUNDS[NUM_BUFFERS] = {
 			DATAPREFIX"data/sounds/asteroid-explosion.wav",
@@ -273,3 +268,11 @@ void State::clear_field(void) {
 	exhaust.erase(exhaust.begin(),exhaust.end());
 	powerups.erase(powerups.begin(),powerups.end());
 }
+
+bool State::set_icon(SDL_Window* W) {
+	SDL_Surface *icon = load_image(DATAPREFIX"data/images/icon2.png");
+	if (!icon) return false;
+	SDL_SetWindowIcon(W, icon);
+	return true;
+}
+

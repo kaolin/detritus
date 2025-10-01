@@ -72,9 +72,9 @@ public:
 
   int getHeight();
 
-  void textSize(char *text, SDL_Rect *r);
+  void textSize(const char *text, SDL_Rect *r);
 
-  void drawText(char *text, int x, int y);
+  void drawText(const char *text, int x, int y);
 
 };
 #endif

@@ -62,12 +62,12 @@ class XYZ {
 			updateSphericalUV();
 		}
 
-		float const getX() const { return r3[0]; }
-		float const getY() const { return r3[1]; }
-		float const getZ() const { return r3[2]; }
-		float const getU() const { return uv[0]; }
-		float const getV() const { return uv[1]; }
-		float const getR() const { return r; }
+		float getX() const { return r3[0]; }
+		float getY() const { return r3[1]; }
+		float getZ() const { return r3[2]; }
+		float getU() const { return uv[0]; }
+		float getV() const { return uv[1]; }
+		float getR() const { return r; }
 
 		XYZ operator*(float f);
 		XYZ operator/(float f);

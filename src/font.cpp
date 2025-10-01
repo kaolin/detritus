@@ -48,11 +48,15 @@ using namespace std;
                                  letter, 
                                  foreground);
 
+			/*
       if (NULL != g0)
       {
         g1 = SDL_DisplayFormatAlpha(g0);
         SDL_FreeSurface(g0);
       }
+			*/
+
+			g1 = g0;
 
       if (NULL != g1)
       {
@@ -137,7 +141,7 @@ using namespace std;
     return height;
   }
 
-  void Font::textSize(char *text, 
+  void Font::textSize(const char *text, 
                 SDL_Rect *r)
   {
     int maxx = 0;
@@ -183,7 +187,7 @@ using namespace std;
 
   }
 
-  void Font::drawText(char *text, int x, int y)
+  void Font::drawText(const char *text, int x, int y)
   {
     GLfloat left, right;
     GLfloat top, bottom;

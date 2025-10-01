@@ -85,6 +85,7 @@ class State {
 		void moveRelativeSound(int i,const XYZ &position); // move sound "i" to point src
 		void stopSound(int i); // KILL sound KILL!!!
 		void clear_field(); // reset all the vectors
+		bool set_icon(SDL_Window *W); // seticonwheeee
 
 	private:
 		State(); // ctor is hidden

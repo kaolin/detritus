@@ -56,7 +56,7 @@ const int MODE_GAMENEARLYOVER = 11;
 const int MODE_GAMEOVER = 12;
 Timer modetimer;
 
-char *versiontext = GAME_VERSION;
+const char *versiontext = GAME_VERSION;
 char new_hs_name[80] = "";
 
 int score=0;
@@ -81,7 +81,7 @@ bool playable=false;
 bool attract=false;
 bool press_spacebar=true;
 
-char * titlescreen = 
+const char * titlescreen = 
 "  Detritus is a fast-paced shoot-em-up\n"
 "strongly based on the old classic Asteroids.\n"
 " Replenish your shield with power-ups and\n"
@@ -99,8 +99,8 @@ int SCREEN_WIDTH; int SCREEN_HEIGHT;
 const int resolutions[][2] = {{1280,1024},{1024,768},{800,600},{640,480}};
 int resolutions_n = 4;
 
-int SCREEN_WIDTH_NATIVE = -1;
-int SCREEN_HEIGHT_NATIVE = -1;
+int SCREEN_WIDTH_NATIVE = 800; // TODO
+int SCREEN_HEIGHT_NATIVE = 600; // TODO
 const int SCREEN_ORTHO_WIDTH = 800; const int SCREEN_ORTHO_HEIGHT = 600;
 const int SCREEN_BPP = 32;
 const int FRAMES_PER_SECOND = 60;
@@ -116,7 +116,8 @@ bool keyboard_cleared = 0;
 
 State *state;
 
-SDL_Surface *screen;
+//SDL_Surface *screen;
+SDL_Window *window;
 SDL_Event event;
 
 //GLfloat LightAmbient[]= { .7f,.7f,.7f,1.0f };
@@ -127,7 +128,7 @@ GLfloat LightPosition[]= { 0.0f, 0.0f, 0.0f,1.0f };
 GLfloat LightLinearAttenuation= .05f;
 GLfloat LightLinearAttenuation1= .3f;
 
-char *definition = "\
+const char *definition = "\
 de-tri-tus: \
 \
 	\\di-'trI-t&s\\, n. (( dee-TRY-tus ))\
@@ -141,11 +142,12 @@ de-tri-tus: \
 #ifdef DEBUG
 Uint32 videoFlags = SDL_OPENGL|SDL_GL_ACCELERATED_VISUAL|SDL_NOFRAME;//|SDL_FULLSCREEN;//|SDL_FULLSCREEN|SDL_OPENGLBLIT|SDL_HWSURFACE;
 #else
-Uint32 videoFlags = SDL_OPENGL|SDL_GL_ACCELERATED_VISUAL|SDL_NOFRAME|SDL_FULLSCREEN;//|SDL_OPENGLBLIT|SDL_HWSURFACE;
+//Uint32 videoFlags = SDL_OPENGL|SDL_GL_ACCELERATED_VISUAL|SDL_NOFRAME|SDL_FULLSCREEN;//|SDL_OPENGLBLIT|SDL_HWSURFACE;
+Uint32 videoFlags = SDL_WINDOW_OPENGL;//|SDL_OPENGLBLIT|SDL_HWSURFACE;
 #endif
 
-void Draw3D(SDL_Surface *S);
-void Draw2D(SDL_Surface *S);
+void Draw3D(SDL_Window *W);
+void Draw2D(SDL_Window *W);
 void ReshapeGL(int width, int height); 
 void Selection(void);
 void initDemo(void);
@@ -199,10 +201,10 @@ chdir(osxpath);
 //ofstream outfile("/tmp/debug");
 //char foo[200]; getwd(foo); outfile << foo << endl;
 //outfile.close();
-	SDL_EnableUNICODE(true);
-	SDL_putenv("SDL_VIDEO_WINDOW_POS=0,0");
+	//SDL_EnableUNICODE(true);
+	//SDL_putenv("SDL_VIDEO_WINDOW_POS=0,0");
 	//Set the window caption
-	SDL_WM_SetCaption(GAME_CAPTION,NULL);
+	//SDL_WM_SetCaption(GAME_CAPTION,NULL);
 	// 16-bit db with 16-bit db minim
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE,5);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,5);
@@ -213,29 +215,43 @@ chdir(osxpath);
 	//Set us up the screen
 	
 	/* find a screen resolution */
-	int i=0;
-	screen = NULL;
+	//int i=0;
+	//screen = NULL;
 	//cout << "width: " << SDL_GetVideoInfo()->current_w << endl;
 	//cout << "height: " << SDL_GetVideoInfo()->current_h << endl;
-	screen = SDL_SetVideoMode(SDL_GetVideoInfo()->current_w,SDL_GetVideoInfo()->current_h,SCREEN_BPP,videoFlags);//SDL_SWSURFACE | SDL_SRCALPHA);// | SDL_FULLSCREEN); // SDL_GL_STEREO, SDL_GL_STENCIL_SIZE, (is CONFIG_REFLECTION -- how?)
-	if (false) for (i=0;i<resolutions_n && screen == NULL;i++) {
-		screen = SDL_SetVideoMode(resolutions[i][0],resolutions[i][1],SCREEN_BPP,videoFlags);//SDL_SWSURFACE | SDL_SRCALPHA);// | SDL_FULLSCREEN); // SDL_GL_STEREO, SDL_GL_STENCIL_SIZE, (is CONFIG_REFLECTION -- how?)
+	//screen = SDL_SetVideoMode(SDL_GetVideoInfo()->current_w,SDL_GetVideoInfo()->current_h,SCREEN_BPP,videoFlags);//SDL_SWSURFACE | SDL_SRCALPHA);// | SDL_FULLSCREEN); // SDL_GL_STEREO, SDL_GL_STENCIL_SIZE, (is CONFIG_REFLECTION -- how?)
+	//if (false) for (i=0;i<resolutions_n && screen == NULL;i++) {
+		//screen = SDL_SetVideoMode(resolutions[i][0],resolutions[i][1],SCREEN_BPP,videoFlags);//SDL_SWSURFACE | SDL_SRCALPHA);// | SDL_FULLSCREEN); // SDL_GL_STEREO, SDL_GL_STENCIL_SIZE, (is CONFIG_REFLECTION -- how?)
 		//screen = SDL_SetVideoMode(0,0,SCREEN_BPP,videoFlags);//SDL_SWSURFACE | SDL_SRCALPHA);// | SDL_FULLSCREEN); // SDL_GL_STEREO, SDL_GL_STENCIL_SIZE, (is CONFIG_REFLECTION -- how?)
 
-	}
-	if (!screen) {
-		cout << "UNABLE TO FIND A RESOLUTION TO SATISFY" << endl;
-		return false;
-	}
+	//}
+	//if (!screen) {
+		//cout << "UNABLE TO FIND A RESOLUTION TO SATISFY" << endl;
+		//return false;
+	//}
 
-	SCREEN_WIDTH = resolutions[i][0];
-	SCREEN_HEIGHT = resolutions[i][1];
-	
-	SCREEN_WIDTH_NATIVE = SDL_GetVideoInfo()->current_w;
-	SCREEN_HEIGHT_NATIVE = SDL_GetVideoInfo()->current_h;
-
+	//SCREEN_WIDTH = resolutions[i][0];
+	//SCREEN_HEIGHT = resolutions[i][1];
+	//
+	//SCREEN_WIDTH_NATIVE = SDL_GetVideoInfo()->current_w;
+	//SCREEN_HEIGHT_NATIVE = SDL_GetVideoInfo()->current_h;
+//
 	//initialize OpenGL
-	glViewport(0,0,SCREEN_WIDTH,SCREEN_HEIGHT);
+	//glViewport(0,0,SCREEN_WIDTH,SCREEN_HEIGHT);
+	//glViewport(0,0,640,480);
+	// DO I NEED: 
+	window = SDL_CreateWindow("Detritus", 0, 0, SCREEN_WIDTH_NATIVE, SCREEN_HEIGHT_NATIVE, SDL_WINDOW_OPENGL);
+	if (NULL == window) {
+		printf("NULL WINDOW\n");
+		return EXIT_FAILURE;
+	}
+	printf("FIX THIS - SCREEN WIDTH/HEIGHT HOW?\n");
+
+	SDL_GLContext gl_context = SDL_GL_CreateContext(window);
+	if (nullptr == gl_context) {
+		printf("NULL GL CONTEXT\n");
+		return EXIT_FAILURE;
+	}
 
 /*
 	glClearColor(0.0f,0.0f,0.1f,0.0f);
@@ -281,6 +297,7 @@ chdir(osxpath);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);			// Set Perspective Calculations To Most Accurate
 
 	//call reshape gl...
+	printf("TODO: FIX NATIVE\n");
 	ReshapeGL(SCREEN_WIDTH_NATIVE,SCREEN_HEIGHT_NATIVE);
 //char pwd[200];
 //getwd(pwd);
@@ -294,14 +311,17 @@ chdir(osxpath);
 	upgrade(); // up1 is moving detritus.db for pre 1.0.5 versions
 
 	const char *path = getApplicationDataPath();
-	char *datafile = "detritus.db";
+	const char *datafile = "detritus.db";
 	char *patheddatafile = new char[strlen(datafile) + strlen(path) + 1];
 	strcpy(patheddatafile,path);
 	strcat(patheddatafile,datafile);
 	scores = new HighScores(patheddatafile);
+
+	state->set_icon(window);
 	
 	initDemo();
 	return true;
+	
 }
 
 void initDemo(void) {
@@ -377,7 +397,7 @@ void pausePlaying(bool pause=true) {
 //#undef main
 //#endif
 
-int main( int argc, char* args[] ) {
+int main(int argc, char* argv[] )  {
 
 	srand((unsigned)time(NULL));
 	//Make sure the program waits for a quit
@@ -522,7 +542,7 @@ int main( int argc, char* args[] ) {
 				(event.key.keysym.sym == SDLK_F4 && (event.key.keysym.mod & KMOD_LALT) )
 #endif
 #ifdef OSX
-				(event.key.keysym.sym == 'q' && (event.key.keysym.mod & KMOD_META) )
+				(event.key.keysym.sym == 'q' && (event.key.keysym.sym & KMOD_GUI) )
 #endif
 #ifdef LINUX
 				(event.key.keysym.sym == 'q' && (event.key.keysym.mod & KMOD_CTRL) )
@@ -541,12 +561,13 @@ int main( int argc, char* args[] ) {
 						break;
 					}
 					break;
-				case SDL_KEYDOWN: 
+				case SDL_KEYDOWN:
 					if (mode == MODE_NEWHIGHSCORE) {
-						char key = event.key.keysym.unicode;
+						//char key = event.text.text; printf("TODO: this was .unicode, should it be event.text.text? case SDL_TEXTINPUT? SDL_StartTextINput()?\n");
+						char key = event.text.text[0]; printf("TODO: this was .unicode, should it be event.text.text? case SDL_TEXTINPUT? SDL_StartTextINput()?\n");
 						if (event.key.keysym.sym == SDLK_LSHIFT || event.key.keysym.sym == SDLK_RSHIFT) continue;
 						if (event.key.keysym.sym == SDLK_LCTRL || event.key.keysym.sym == SDLK_RCTRL) continue;
-						if (event.key.keysym.sym == SDLK_LMETA || event.key.keysym.sym == SDLK_RMETA) continue;
+						if (event.key.keysym.sym == SDLK_LGUI || event.key.keysym.sym == SDLK_RGUI) continue;
 						if (event.key.keysym.sym == SDLK_LALT || event.key.keysym.sym == SDLK_RALT) continue;
 						int len = strlen(new_hs_name);
 						if (key == 13 || key == 10) {
@@ -665,15 +686,17 @@ int main( int argc, char* args[] ) {
 					mouse_y = event.button.y;
 					break;
 */
+					/* // first, make sure your SDL_CreateWindow has SDL_WINDOW_RESIZABLE, then SDL_WINDOWEVENT --> event.window.event == SDL_WINDOWEVENT_RESIZED
 				case SDL_VIDEORESIZE:
 					ReshapeGL(event.resize.w,event.resize.h);
 					break;
+			*/
 			}
 		}
 
 		//Apply the background to the screen -- origin at top left!
-		Draw3D(screen);
-		Draw2D(screen);
+		Draw3D(window);
+		Draw2D(window);
 		state->frame++;
 
 		//Cap the frame rate
@@ -690,25 +713,31 @@ int main( int argc, char* args[] ) {
 			sprintf(caption,"%s (%f fps)",GAME_CAPTION,fps);
 
 			//Reset the caption
-			SDL_WM_SetCaption(caption,NULL);
+			//SDL_WM_SetCaption(caption,NULL);
+			printf("TODO: %s",caption);
+			// window = SDL_CreateWindow( "Initial Title", // Initial title can be set here SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL); if (window == nullptr) { // Handle error }
+			// Assume 'window' is your SDL_Window* pointer created earlier
+      // SDL_SetWindowTitle(window, caption);
+
 
 			//Restart the update timer
 			state->update.start();
 			state->frame = 0;
 		}
 
-		SDL_GL_SwapBuffers();
+		//SDL_GL_SwapBuffers();
+		SDL_GL_SwapWindow(window);
 	}
 
 	//Free the surface(s) and quit SDL
 	clean_up();
 
 	//Return
-	return 0; 
+	return EXIT_SUCCESS; 
 }
 
 
-void Draw3D(SDL_Surface *S)	{
+void Draw3D(SDL_Window *W)	{
 	static float ticks = state->thing.get_ticks();
 	static float attract_ticks = state->thing2.get_ticks();
 	float stateticks; 
@@ -1104,7 +1133,7 @@ void draw2DImage(GLuint tex, GLfloat *texcoords, float x, float y, float width, 
 	}
 }
 
-void Draw2D(SDL_Surface *S) {
+void Draw2D(SDL_Window *W) {
 	char print_score[80];
 	//char print_high[80];
 	char print_level[80];
@@ -1122,7 +1151,8 @@ void Draw2D(SDL_Surface *S) {
 
 	glDisable(GL_LIGHTING);
 	static SDL_Rect src1={0,0,0,0};
-	SDL_FillRect(S, &src1, SDL_MapRGBA(S->format,0,0,0,0));
+	//SDL_FillRect(S, &src1, SDL_MapRGBA(S->format,0,0,0,0));
+	//TODO: WHAT THIS
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();

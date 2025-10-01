@@ -73,7 +73,7 @@ GLuint loadTextureColorKey(SDL_Surface *surface,
   SDL_FillRect(image, NULL, colorkey);
 
   colorkey = SDL_MapRGBA(surface->format, ckr, ckg, ckb, 0);
-  SDL_SetColorKey(surface, SDL_SRCCOLORKEY, colorkey);
+  SDL_SetColorKey(surface, SDL_TRUE, colorkey);
 
   // Copy the surface into the GL texture image 
   area.x = 0;
@@ -145,12 +145,55 @@ GLuint SDL_GL_LoadTexture(SDL_Surface *surface, GLfloat *texcoord) {
         return 0;
     }
 
+		// TODO: RESTORE THESE AS NECESSARY
+		/*
+		 * // In SDL2, you get the state directly with functions
+SDL_BlendMode saved_blend_mode;
+Uint8 saved_alpha_mod;
+
+// Check if the functions exist before calling (optional, but good practice)
+if (SDL_GetSurfaceBlendMode(surface, &saved_blend_mode) != 0) {
+    // Handle error
+}
+if (SDL_GetSurfaceAlphaMod(surface, &saved_alpha_mod) != 0) {
+    // Handle error
+}
+// In SDL2, you set the state with dedicated functions
+if (SDL_SetSurfaceBlendMode(surface, SDL_BLENDMODE_BLEND) != 0) {
+    // Handle error
+}
+if (SDL_SetSurfaceAlphaMod(surface, 255) != 0) {
+    // Handle error
+}
+// Restore the saved state
+if (SDL_SetSurfaceBlendMode(surface, saved_blend_mode) != 0) {
+    // Handle error
+}
+if (SDL_SetSurfaceAlphaMod(surface, saved_alpha_mod) != 0) {
+    // Handle error
+}
+Since your code uses OpenGL, a more robust solution would be to avoid surfaces entirely after loading and instead convert them to textures. SDL_CreateTextureFromSurface() is the modern way to get a surface's data onto the GPU for hardware-accelerated rendering.
+
+// Load surface with alpha
+SDL_Surface* surface = IMG_Load("image.png");
+
+// Create texture from surface, enabling alpha
+SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+SDL_FreeSurface(surface); // Free the surface as it's no longer needed
+
+// ... later, when rendering
+SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND); // Enable blending
+SDL_RenderCopy(renderer, texture, NULL, NULL);
+
+*/
     /* Save the alpha blending attributes */
+/*
     saved_flags = surface->flags&(SDL_SRCALPHA|SDL_RLEACCELOK);
     saved_alpha = surface->format->alpha;
     if ( (saved_flags & SDL_SRCALPHA) == SDL_SRCALPHA ) {
         SDL_SetAlpha(surface, 0, 0);
     }
+		*/
 
     /* Copy the surface into the GL texture image */
     area.x = 0;
@@ -160,9 +203,11 @@ GLuint SDL_GL_LoadTexture(SDL_Surface *surface, GLfloat *texcoord) {
     SDL_BlitSurface(surface, &area, image, &area);
 
     /* Restore the alpha blending attributes */
+		/*
     if ( (saved_flags & SDL_SRCALPHA) == SDL_SRCALPHA ) {
         SDL_SetAlpha(surface, saved_flags, saved_alpha);
     }
+		*/
 
     /* Create an OpenGL texture for the image */
     glGenTextures(1, &texture);
@@ -222,11 +267,13 @@ GLuint SDL_GL_Build2DMipmaps(SDL_Surface *surface, int width, int height, GLfloa
     }
 
     /* Save the alpha blending attributes */
+		/*
     saved_flags = surface->flags&(SDL_SRCALPHA|SDL_RLEACCELOK);
     saved_alpha = surface->format->alpha;
     if ( (saved_flags & SDL_SRCALPHA) == SDL_SRCALPHA ) {
         SDL_SetAlpha(surface, 0, 0);
     }
+		*/
 
     /* Copy the surface into the GL texture image */
     area.x = 0;
@@ -236,9 +283,11 @@ GLuint SDL_GL_Build2DMipmaps(SDL_Surface *surface, int width, int height, GLfloa
     SDL_BlitSurface(surface, &area, image, &area);
 
     /* Restore the alpha blending attributes */
+		/*
     if ( (saved_flags & SDL_SRCALPHA) == SDL_SRCALPHA ) {
         SDL_SetAlpha(surface, saved_flags, saved_alpha);
     }
+		*/
 
     /* Create an OpenGL texture for the image */
     glGenTextures(1, &texture);
@@ -271,10 +320,12 @@ SDL_Surface *load_image( string filename, bool optimized ) {
 	if( optimized && loadedImage != NULL ) { 
 
 		//Create an optimized image 
-		optimizedImage = SDL_DisplayFormatAlpha( loadedImage ); 
+		//optimizedImage = SDL_DisplayFormatAlpha( loadedImage ); 
+		// TODO: skipping optimize
+		optimizedImage = loadedImage;
 
 		//Free the old image 
-		SDL_FreeSurface( loadedImage ); 
+		//TODO: put this back ~ SDL_FreeSurface( loadedImage ); 
 	} else {
 		optimizedImage = loadedImage;
 	}

@@ -19,9 +19,16 @@
 **/
 
 #include "font.h"
+#include <cmath>
 
 #include <iostream>
 using namespace std;
+
+// Function to find the next power of two greater than or equal to a given value
+int nextPowerOfTwo(int value) {
+    if (value <= 1) return 1;
+    return pow(2, ceil(log(value) / log(2)));
+}
 
   void Font::loadChar(char c)
   {
@@ -56,7 +63,26 @@ using namespace std;
       }
 			*/
 
-			g1 = g0;
+			            // Adjust the width and height to the next power of two
+            int newWidth = nextPowerOfTwo(g0->w);
+            int newHeight = nextPowerOfTwo(g0->h);
+
+            // Create a new surface with the adjusted dimensions
+            g1 = SDL_CreateRGBSurface(0, newWidth, newHeight, g0->format->BitsPerPixel,
+                                      g0->format->Rmask, g0->format->Gmask,
+                                      g0->format->Bmask, g0->format->Amask);
+						                SDL_FillRect(g1, NULL, SDL_MapRGBA(g1->format, 0, 0, 0, 0));
+
+                // Blit the original surface onto the new surface
+                SDL_Rect destRect = {0, 0, g0->w, g0->h};
+                SDL_BlitSurface(g0, NULL, g1, &destRect);
+
+                // Free the original surface
+                SDL_FreeSurface(g0);
+
+
+
+			//g1 = g0;
 
       if (NULL != g1)
       {

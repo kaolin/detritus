@@ -56,6 +56,7 @@ all: $(APP)
 	@echo "==> Portable DMG ready: $(DMG_NAME)"
 
 $(APP): $(BUILD_DIR)/$(EXECUTABLE) $(APP_PLIST)
+	rm -rf $(APP)
 	@echo "==> Creating Iconset..."
 	mkdir Detritus.iconset
 	sips -z 16 16     data/images/icon2.png --out Detritus.iconset/icon_16x16.png
@@ -151,7 +152,7 @@ run: $(BUILD_DIR)/$(EXECUTABLE)
 	@./Detritus.app/Contents/MacOS/detritus
 
 apple: $(APP)
-	@xcrun notarytool submit $(DMG_NAME) --apple-id $(APPLE_ID) --password $(APP_PASS) --team-id $(TEAM_ID) --wait
+	xcrun notarytool submit $(DMG_NAME) --apple-id $(APPLE_ID) --password $(APP_PASS) --team-id $(TEAM_ID) --wait
 	xcrun stapler staple $(DMG_NAME)
 
 .PHONY: all clean apple

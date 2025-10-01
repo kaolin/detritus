@@ -8,7 +8,6 @@ Detritus.app
 
 .DS_Store
 Detritus.exe
-Makefile
 Makefile.osx-2012
 Makefile.osx-2017
 Makefile.osx-multiarch

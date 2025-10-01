@@ -45,12 +45,13 @@ std::ostream * getErrorStream();
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 #include <OpenGL/glu.h>
-#include <al.h>
-#include <alc.h>
+#include <AL/al.h>
+#include <AL/alc.h>
+//#include <AL/alut.h>
 //#include <MacOSX_OALExtensions.h>
-#include <oalMacOSX_OALExtensions.h>
+//#include <oalMacOSX_OALExtensions.h>
 //#include "../osx/altypes.h"
-#include "../osx/alut.h"
+//#include "../osx/alut.h"
 #endif
 
 #ifdef WINDOWS

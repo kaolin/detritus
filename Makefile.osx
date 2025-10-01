@@ -39,8 +39,9 @@ CXX          := clang++
 #          -Wl,-rpath,@executable_path/../Frameworks
 
 # FOR NOW!!!!!
-CXX_FLAGS    := -Wno-deprecated -W -Isrc -DOSX -Os -I/opt/homebrew/include -I /Users/kaolin/dev/0tools/SDK/sysroot/System/Library/Frameworks/OpenAL.framework/Headers
-LDFLAGS      :=-framework Carbon -framework IOKit -framework ApplicationServices -framework Cocoa -L /opt/homebrew/lib -lSDLmain -lSDL2 -lSDL2_ttf -lSDL2_image -lsqlite3 -framework OpenGL -framework OpenAL -gfull -framework CoreData
+CXX_FLAGS    := -Wno-deprecated -W -Isrc -DOSX -Os -I/opt/homebrew/include -I/opt/homebrew/opt/openal-soft/include
+LDFLAGS      :=-framework Carbon -framework IOKit -framework ApplicationServices -framework Cocoa -L /opt/homebrew/lib -L/opt/homebrew/opt/openal-soft/lib -lSDLmain -lSDL2 -lSDL2_ttf -lSDL2_image -lsqlite3 -framework OpenGL -lopenal -gfull -framework CoreData
+  
  
 # -----------------------
 # Build & bundle
@@ -63,10 +64,10 @@ $(APP): $(BUILD_DIR)/$(EXECUTABLE) $(APP_PLIST)
 	sips -z 1024 1024 data/images/icon2.png --out Detritus.iconset/icon_512x512@2x.png
 	iconutil -c icns Detritus.iconset
 	rm -rf  Detritus.iconset
-	mv Detritus.icns $(APP_CONTENTS)/Resources/
 
 	@echo "==> Copying into .app bundle..."
 	@mkdir -p $(APP_MACOS) $(APP_FRAME) $(APP_DATA)
+	mv Detritus.icns $(APP_DATA)
 	cp -f $(BUILD_DIR)/$(EXECUTABLE) $(APP_MACOS)/
 	rsync -avp data/ $(APP_CONTENTS)/Resources/data/
 

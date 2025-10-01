@@ -40,7 +40,7 @@ bool Thing::collision(Thing &t) {
 
 //cout << "BEFORE t.mesh" << endl;
 //cout << &(t.mesh) << endl;
-	if (&t.mesh) {
+	if (nullptr != t.mesh) {
 //cout << "TMESH, GOING IN" << endl;
 //cout << "address of: " << &t.mesh << endl;
 //cout << "ref#: " << t.mesh << endl;

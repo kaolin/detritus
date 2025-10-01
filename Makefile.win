@@ -1,0 +1,45 @@
+#windows makefile; defines WINDOWS
+# compile "-mwindows" for no console
+
+# http://www.cs.amherst.edu/~sfkaplan/courses/fall-2003/cs39/tools-and-refs/GNU-make-documentation/make_8.html
+
+#http://www.cs.utah.edu/dept/old/texinfo/make/make.html
+
+#CC = c:\mingw\bin\g++
+CC = c:\mingw\bin\mingw32-g++
+LD = $(CC)
+H = $(wildcard src/*.h)
+SRC = $(wildcard src/*.cpp)
+OBJS = $(addsuffix .o, $(strip $(basename $(SRC))))
+
+#FLAGS =  -g -s -O2 -mwindows
+#-luser32 -lgdi32 -lwinmm
+
+#FLAGS = -fno-exceptions -mconsole -mwindows -s #console output
+#FLAGS = -g -mwindows -t  -DDEBUG #DEBUG
+#FLAGS = -mconsole -mwindows -t  -DDEBUG #mini DEBUG
+FLAGS = -DWINDOWS -O3 -s -mwindows -Wall #REGULAR
+
+LFLAGS = -lmingw32 -lSDLmain -lSDL -lSDL_image -lSDL_ttf -lopengl32 -lglu32 -lalut -lopenal32
+
+detritus.exe: ${OBJS} src/resource.o Makefile ${H}
+	${LD} ${FLAGS} -o detritus.exe ${OBJS} src/resource.o ${LFLAGS}
+
+src/resource.o: src/game.rc misc/game.ico
+	windres -i src/game.rc -o src/resource.o
+
+misc/game.ico: misc/icon16.ico misc/icon32.ico misc/icon64.ico misc/icon128.ico
+	icobundl -o misc/game.ico misc/icon*.ico
+
+%.o: %.cpp %.h Makefile
+	$(CC) $(FLAGS) -c $(basename $@).cpp -o $@
+
+clean:
+	-@del src\*.o
+	-@del detritus.exe
+
+run: detritus.exe
+	detritus.exe
+
+gdb: detritus.exe
+	gdb detritus.exe

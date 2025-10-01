@@ -109,18 +109,18 @@ void SpreadPowerup::fire(XYZ *position, XYZ *velocity, XYZ *orientation) {
 }
 
 /* TODO: this is going to take more thought :/ */
-void LaserPowerup::fire(XYZ *position, XYZ *velocity, XYZ *orientation) {
+void LaserPowerup::fire([[maybe_unused]] XYZ *position, [[maybe_unused]] XYZ *velocity, [[maybe_unused]] XYZ *orientation) {
 }
 	
-void SeekerPowerup::fire(XYZ *position, XYZ *velocity, XYZ *orientation) {
+void SeekerPowerup::fire(XYZ *position, XYZ *velocity, [[maybe_unused]] XYZ *orientation) {
 	state->bullets.push_back(new SeekerBullet(velocity,position,color));
 }
 	
-void StarburstPowerup::fire(XYZ *position, XYZ *velocity, XYZ *orientation) {
+void StarburstPowerup::fire(XYZ *position, XYZ *velocity, [[maybe_unused]] XYZ *orientation) {
 	state->bullets.push_back(new StarburstBullet(velocity,position,color));
 }
 	
-void BlowthroughPowerup::fire(XYZ *position, XYZ *velocity, XYZ *orientation) {
+void BlowthroughPowerup::fire(XYZ *position, XYZ *velocity, [[maybe_unused]] XYZ *orientation) {
 	state->bullets.push_back(new BlowthroughBullet(velocity,position,color));
 }
 

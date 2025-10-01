@@ -4,7 +4,7 @@
 #include "state.h"
 #include "ship.h"
 
-bool Exhaust::collision(Thing &t) {
+bool Exhaust::collision([[maybe_unused]] Thing &t) {
 	return false; // TODO: COLLISIONS?
 }
 

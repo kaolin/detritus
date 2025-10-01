@@ -3,7 +3,7 @@
 #include "geometry.h"
 #include "state.h"
 
-bool Shard::collision(Thing &t) {
+bool Shard::collision([[maybe_unused]] Thing &t) {
 	return false; // TODO: COLLISIONS?
 }
 

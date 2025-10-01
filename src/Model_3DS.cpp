@@ -664,7 +664,7 @@ void Model_3DS::MaterialChunkProcessor(long length, long findex, int matindex)
 	fseek(bin3ds, findex, SEEK_SET);
 }
 
-void Model_3DS::MaterialNameChunkProcessor(long length, long findex, int matindex)
+void Model_3DS::MaterialNameChunkProcessor([[maybe_unused]] long length, long findex, int matindex)
 {
 	// move the file pointer to the beginning of the main
 	// chunk's data findex + the size of the header
@@ -731,7 +731,7 @@ void Model_3DS::DiffuseColorChunkProcessor(long length, long findex, int matinde
 	fseek(bin3ds, findex, SEEK_SET);
 }
 
-void Model_3DS::FloatColorChunkProcessor(long length, long findex, int matindex)
+void Model_3DS::FloatColorChunkProcessor([[maybe_unused]] long length, long findex, int matindex)
 {
 	float r;
 	float g;
@@ -756,7 +756,7 @@ void Model_3DS::FloatColorChunkProcessor(long length, long findex, int matindex)
 	fseek(bin3ds, findex, SEEK_SET);
 }
 
-void Model_3DS::IntColorChunkProcessor(long length, long findex, int matindex)
+void Model_3DS::IntColorChunkProcessor([[maybe_unused]] long length, long findex, int matindex)
 {
 	unsigned char r;
 	unsigned char g;
@@ -812,7 +812,7 @@ void Model_3DS::TextureMapChunkProcessor(long length, long findex, int matindex)
 	fseek(bin3ds, findex, SEEK_SET);
 }
 
-void Model_3DS::MapNameChunkProcessor(long length, long findex, int matindex)
+void Model_3DS::MapNameChunkProcessor([[maybe_unused]] long length, long findex, int matindex)
 {
 	char name[80];
 
@@ -944,7 +944,7 @@ void Model_3DS::TriangularMeshChunkProcessor(long length, long findex, int objin
 	fseek(bin3ds, findex, SEEK_SET);
 }
 
-void Model_3DS::VertexListChunkProcessor(long length, long findex, int objindex)
+void Model_3DS::VertexListChunkProcessor([[maybe_unused]] long length, long findex, int objindex)
 {
 	unsigned short numVerts;
 
@@ -984,7 +984,7 @@ void Model_3DS::VertexListChunkProcessor(long length, long findex, int objindex)
 	fseek(bin3ds, findex, SEEK_SET);
 }
 
-void Model_3DS::TexCoordsChunkProcessor(long length, long findex, int objindex)
+void Model_3DS::TexCoordsChunkProcessor([[maybe_unused]] long length, long findex, int objindex)
 {
 	// The number of texture coordinates
 	unsigned short numCoords;
@@ -1157,7 +1157,7 @@ void Model_3DS::FacesDescriptionChunkProcessor(long length, long findex, int obj
 	fseek(bin3ds, findex, SEEK_SET);
 }
 
-void Model_3DS::FacesMaterialsListChunkProcessor(long length, long findex, int objindex, int subfacesindex)
+void Model_3DS::FacesMaterialsListChunkProcessor([[maybe_unused]] long length, long findex, int objindex, int subfacesindex)
 {
 	char name[80];				// The material's name
 	unsigned short numEntries;	// The number of faces associated with this material

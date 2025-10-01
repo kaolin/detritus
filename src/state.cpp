@@ -192,7 +192,7 @@ bool State::load_files() {
 	}
 
 	/* Sound */
-	char* SOUNDS[NUM_BUFFERS] = {
+	const char* SOUNDS[NUM_BUFFERS] = {
 			DATAPREFIX"data/sounds/asteroid-explosion.wav",
 			DATAPREFIX"data/sounds/bullet.wav",
 			DATAPREFIX"data/sounds/shield.wav",

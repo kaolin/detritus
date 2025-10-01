@@ -9,7 +9,7 @@ void upgrade(void) {
 	const char *path = getApplicationDataPath();
 
 	//FIRST upgrade!  Copying old Detritus.db if it's in the wrong place, if one doesn't exist in the _right_ place
-	char *datafile = "/detritus.db";
+	const char *datafile = "/detritus.db";
 	char *patheddatafile = new char[strlen(datafile) + strlen(path) + 1];
 	strcpy(patheddatafile,path);
 	strcat(patheddatafile,datafile);
@@ -30,6 +30,6 @@ void upgrade(void) {
 		fin.close();
 	}
 	
-	delete(patheddatafile);
+	delete[](patheddatafile);
 
 }

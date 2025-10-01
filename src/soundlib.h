@@ -3,7 +3,7 @@
 
 #include "os.h" // WINDOWS or LINUX or OSX
 
-int soundlib_init(int soundn, char** sounds);
+int soundlib_init(int soundn, const char** sounds);
 
 void soundlib_start(void);  // toggle sound in general on
 void soundlib_stop(void);   // toggle sound in general off

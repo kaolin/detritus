@@ -1,7 +1,7 @@
 #ifndef __GAME_H
 #define __GAME_H
 
-#define GAME_VERSION "Detritus v1.0.6"
+#define GAME_VERSION "Detritus v1.0.7"
 #define WINPATH_COMPANY "Erif"
 #define WINPATH_GAME "Detritus"
 #define WINPATH_VERSION "1.0"

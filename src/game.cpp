@@ -103,7 +103,7 @@ int SCREEN_WIDTH_NATIVE = 800; // TODO
 int SCREEN_HEIGHT_NATIVE = 600; // TODO
 const int SCREEN_ORTHO_WIDTH = 800; const int SCREEN_ORTHO_HEIGHT = 600;
 const int SCREEN_BPP = 32;
-const int FRAMES_PER_SECOND = 60;
+const int FRAMES_PER_SECOND = 100;
 const char* GAME_CAPTION = GAME_VERSION;
 float mouse_x=-128, mouse_y=-128;
 
@@ -143,7 +143,8 @@ de-tri-tus: \
 Uint32 videoFlags = SDL_OPENGL|SDL_GL_ACCELERATED_VISUAL|SDL_NOFRAME;//|SDL_FULLSCREEN;//|SDL_FULLSCREEN|SDL_OPENGLBLIT|SDL_HWSURFACE;
 #else
 //Uint32 videoFlags = SDL_OPENGL|SDL_GL_ACCELERATED_VISUAL|SDL_NOFRAME|SDL_FULLSCREEN;//|SDL_OPENGLBLIT|SDL_HWSURFACE;
-Uint32 videoFlags = SDL_WINDOW_OPENGL;//|SDL_OPENGLBLIT|SDL_HWSURFACE;
+//Uint32 videoFlags = SDL_WINDOW_OPENGL;//|SDL_OPENGLBLIT|SDL_HWSURFACE;
+Uint32 videoFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_BORDERLESS;//|SDL_GL_ACCELERATED_VISUAL|SDL_NOFRAME;//|SDL_OPENGLBLIT|SDL_HWSURFACE;
 #endif
 
 void Draw3D(SDL_Window *W);
@@ -212,6 +213,8 @@ chdir(osxpath);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,16);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
 
+	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+
 	//Set us up the screen
 	
 	/* find a screen resolution */
@@ -252,6 +255,11 @@ chdir(osxpath);
 		printf("NULL GL CONTEXT\n");
 		return EXIT_FAILURE;
 	}
+
+    if (SDL_GL_SetSwapInterval(1) < 0) {
+			printf("SDL VSYNC NOT USPPORTED\n");
+		}
+
 
 /*
 	glClearColor(0.0f,0.0f,0.1f,0.0f);
@@ -397,7 +405,16 @@ void pausePlaying(bool pause=true) {
 //#undef main
 //#endif
 
-int main(int argc, char* argv[] )  {
+int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[] )  {
+	    char cwd[1024];
+    getcwd(cwd, sizeof(cwd));
+    cout << "Working directory: " << cwd << endl;
+    cout << "argc: " << argc << endl;
+    for (int i = 0; i < argc; i++) {
+			std::cout << "argv[" << i << "]: " << argv[i] << std::endl;
+    }
+    fflush(stdout);
+
 
 	srand((unsigned)time(NULL));
 	//Make sure the program waits for a quit
@@ -700,10 +717,11 @@ int main(int argc, char* argv[] )  {
 		state->frame++;
 
 		//Cap the frame rate
-		while (state->fps.get_ticks() < 1000.0f/FRAMES_PER_SECOND) {
-			//wait
-			SDL_Delay(10); // let other things happen!
-		}
+		// rely on vsync setting
+		//while (state->fps.get_ticks() < 1000.0f/FRAMES_PER_SECOND) {
+		//	//wait
+		//	SDL_Delay(10); // let other things happen!
+		//}
 		if (state->update.get_ticks() > 1000) {
 			//A temp string
 			char caption[64];
@@ -714,10 +732,10 @@ int main(int argc, char* argv[] )  {
 
 			//Reset the caption
 			//SDL_WM_SetCaption(caption,NULL);
-			printf("TODO: %s",caption);
+			//printf("TODO: %s",caption);
 			// window = SDL_CreateWindow( "Initial Title", // Initial title can be set here SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL); if (window == nullptr) { // Handle error }
 			// Assume 'window' is your SDL_Window* pointer created earlier
-      // SDL_SetWindowTitle(window, caption);
+      SDL_SetWindowTitle(window, caption);
 
 
 			//Restart the update timer
@@ -737,7 +755,7 @@ int main(int argc, char* argv[] )  {
 }
 
 
-void Draw3D(SDL_Window *W)	{
+void Draw3D([[maybe_unused]] SDL_Window *W)	{
 	static float ticks = state->thing.get_ticks();
 	static float attract_ticks = state->thing2.get_ticks();
 	float stateticks; 
@@ -1133,7 +1151,7 @@ void draw2DImage(GLuint tex, GLfloat *texcoords, float x, float y, float width, 
 	}
 }
 
-void Draw2D(SDL_Window *W) {
+void Draw2D([[maybe_unused]] SDL_Window *W) {
 	char print_score[80];
 	//char print_high[80];
 	char print_level[80];

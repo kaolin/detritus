@@ -70,7 +70,7 @@ void stopSound(int i) { if (!disabled) alSourceStop(sources[i]); }
 void pauseSound(int i) { if (soundlib_sound) alSourcePause(sources[i]); }
 void rewindSound(int i) { if (soundlib_sound) alSourceRewind(sources[i]); }
 
-void displayOpenALError(char* s, ALenum e) {
+void displayOpenALError(const char* s, ALenum e) {
   switch (e) {
     case AL_INVALID_NAME:
       cout << "AL Invalid Name: " << s << endl;
@@ -93,7 +93,7 @@ void displayOpenALError(char* s, ALenum e) {
   };
 }
 
-int loadWav(char* file, int buf) {
+int loadWav(const char* file, int buf) {
   int      error;
   ALenum    format; 
   ALsizei    size;
@@ -135,7 +135,7 @@ int loadWav(char* file, int buf) {
   return 1;
 }
 
-int soundlib_init(int soundn, char** sounds) {
+int soundlib_init([[maybe_unused]] int soundn, const char** sounds) {
   int error, i;
   alutInit(0,0); // init
   alGetError(); // clear error code

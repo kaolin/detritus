@@ -27,7 +27,7 @@ void closeDB(sqlite3* db) {
 	sqlite3_close(db);
 }
 
-void errorDB(sqlite3* db) {
+void errorDB([[maybe_unused]] sqlite3* db) {
 #ifdef DEBUG_MYERROR
 	*myerror << "DB Error: " << sqlite3_errmsg(db) << endl;
 #endif

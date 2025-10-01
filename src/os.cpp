@@ -48,8 +48,6 @@ ostream* getErrorStream() {
 }
 
 const char* getApplicationDataPath(void) {
-	char* path=NULL;
-	if (path != NULL) return path;
 	
 	#ifdef WINDOWS
 	TCHAR winpath[MAX_PATH+1];
@@ -74,13 +72,13 @@ const char* getApplicationDataPath(void) {
 	#else 
             //good for OS X, good for linux
             struct passwd *foo = getpwuid(geteuid());
-            path = new char[strlen(foo->pw_dir)+3];
+            char* path = new char[strlen(foo->pw_dir)+3];
             strcpy(path,foo->pw_dir);
             strcat(path,"/.");
             (*getErrorStream()) << path << endl;
 	#endif
 	
 	/* my catchall that should never be reached */	
-	if (path == NULL) path = "data";
+	//if (path == NULL) path = "data";
 	return path;
 }

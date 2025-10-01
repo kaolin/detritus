@@ -11,6 +11,10 @@ APP_FRAME    := $(APP_CONTENTS)/Frameworks
 APP_PLIST    := $(APP_CONTENTS)/Info.plist
 APP_DATA     := $(APP_CONTENTS)/Resources
 BUILD_DIR    := build_arm64
+TEAM_ID      := TP8P64EJ78
+APPLE_ID     := iosdev_spam@erif.org
+BUNDLE_ID    := org.erif.detritus
+APP_PASS     := zosh-tyap-coep-qxgk
 
 BREW_PREFIX  := /opt/homebrew
 PKG_ENV      := PKG_CONFIG_PATH=$(BREW_PREFIX)/lib/pkgconfig
@@ -19,6 +23,8 @@ DMG_NAME     := Detritus-$(VERSION).dmg
 
 CXX_SOURCES  := $(wildcard src/*.cpp)
 CXX_OBJS     := $(patsubst src/%.cpp, $(BUILD_DIR)/%.o, $(CXX_SOURCES))
+
+MIN_VERSION  := -mmacosx-version-min=11.0
 
 CXX          := clang++
 
@@ -39,8 +45,8 @@ CXX          := clang++
 #          -Wl,-rpath,@executable_path/../Frameworks
 
 # FOR NOW!!!!!
-CXX_FLAGS    := -Wno-deprecated -W -Isrc -DOSX -Os -I/opt/homebrew/include -I/opt/homebrew/opt/openal-soft/include
-LDFLAGS      :=-framework Carbon -framework IOKit -framework ApplicationServices -framework Cocoa -L /opt/homebrew/lib -L/opt/homebrew/opt/openal-soft/lib -lSDLmain -lSDL2 -lSDL2_ttf -lSDL2_image -lsqlite3 -framework OpenGL -lopenal -gfull -framework CoreData
+CXX_FLAGS    := -Wno-deprecated -W -Isrc -DOSX -Os -I/opt/homebrew/include -I/opt/homebrew/opt/openal-soft/include $(MIN_VERSION)
+LDFLAGS      :=-framework Carbon -framework IOKit -framework ApplicationServices -framework Cocoa -L /opt/homebrew/lib -L/opt/homebrew/opt/openal-soft/lib -lSDLmain -lSDL2 -lSDL2_ttf -lSDL2_image -lsqlite3 -framework OpenGL -lopenal -gfull -framework CoreData $(MIN_VERSION)
   
  
 # -----------------------
@@ -77,7 +83,7 @@ $(APP): $(BUILD_DIR)/$(EXECUTABLE) $(APP_PLIST)
 #-x Detritus.app/Contents/MacOS/Detritus -d Detritus.app/Contents/Frameworks/ -p @executable_path/../Frameworks/
 
 	@echo "==> Codesigning..."
-	codesign --force --options runtime --deep --sign "Developer ID Application: Kaolin Fire (TP8P64EJ78)" $(APP)
+	codesign --force --timestamp --options runtime --deep --sign "Developer ID Application: Kaolin Fire ($(TEAM_ID))" $(APP)
 
 	@echo "==> Creating DMG..."
 	rm -rf distribute
@@ -144,4 +150,8 @@ run: $(BUILD_DIR)/$(EXECUTABLE)
 	@echo "==> Running..."
 	@./Detritus.app/Contents/MacOS/detritus
 
-.PHONY: all clean
+apple: $(APP)
+	@xcrun notarytool submit $(DMG_NAME) --apple-id $(APPLE_ID) --password $(APP_PASS) --team-id $(TEAM_ID) --wait
+	xcrun stapler staple $(DMG_NAME)
+
+.PHONY: all clean apple

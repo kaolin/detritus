@@ -28,35 +28,13 @@ MIN_VERSION  := -mmacosx-version-min=11.0
 
 CXX          := clang++
 
-# Get all object files from the source files
-
-
-# FANCIER, LATER
-#CFLAGS  = -Wall -Isrc -DOSX -Os \
-#          $(shell $(PKG_ENV) pkg-config --cflags sdl3 sdl3-image sdl3-ttf) \
-#          -Wno-deprecated-declarations
-#
-#LDFLAGS = $(shell $(PKG_ENV) pkg-config --libs sdl3 sdl3-image sdl3-ttf) \
-#          -lsqlite3 \
-#          -framework OpenGL \
-#          -framework OpenAL \
-#          -framework CoreData \
-#          -framework Cocoa \
-#          -Wl,-rpath,@executable_path/../Frameworks
-
-# FOR NOW!!!!!
 CXX_FLAGS    := -Wno-deprecated -W -Isrc -DOSX -Os -I/opt/homebrew/include -I/opt/homebrew/opt/openal-soft/include $(MIN_VERSION)
 LDFLAGS      :=-framework Carbon -framework IOKit -framework ApplicationServices -framework Cocoa -L /opt/homebrew/lib -L/opt/homebrew/opt/openal-soft/lib -lSDLmain -lSDL2 -lSDL2_ttf -lSDL2_image -lsqlite3 -framework OpenGL -lopenal -gfull -framework CoreData $(MIN_VERSION)
-  
- 
-# -----------------------
-# Build & bundle
-# -----------------------
+
 all: $(APP)
 	@echo "==> Portable DMG ready: $(DMG_NAME)"
 
 $(APP): $(BUILD_DIR)/$(EXECUTABLE) $(APP_PLIST)
-	rm -rf $(APP)
 	@echo "==> Creating Iconset..."
 	mkdir Detritus.iconset
 	sips -z 16 16     data/images/icon2.png --out Detritus.iconset/icon_16x16.png
@@ -105,6 +83,7 @@ $(BUILD_DIR):
 	@mkdir -p $(BUILD_DIR)
 
 $(APP_PLIST):
+	rm -rf $(APP)
 	@echo "Writing Info.plist..."
 	@mkdir -p $(APP_CONTENTS) $(APP_MACOS)
 	@printf '%s\n' \

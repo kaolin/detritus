@@ -96,14 +96,9 @@ HighScores *scores;
 
 //The attributes of the screen
 int SCREEN_WIDTH; int SCREEN_HEIGHT;
-const int resolutions[][2] = {{1280,1024},{1024,768},{800,600},{640,480}};
-int resolutions_n = 4;
 
-int SCREEN_WIDTH_NATIVE = 800; // TODO
-int SCREEN_HEIGHT_NATIVE = 600; // TODO
 const int SCREEN_ORTHO_WIDTH = 800; const int SCREEN_ORTHO_HEIGHT = 600;
 const int SCREEN_BPP = 32;
-const int FRAMES_PER_SECOND = 100;
 const char* GAME_CAPTION = GAME_VERSION;
 float mouse_x=-128, mouse_y=-128;
 
@@ -116,7 +111,6 @@ bool keyboard_cleared = 0;
 
 State *state;
 
-//SDL_Surface *screen;
 SDL_Window *window;
 SDL_Event event;
 
@@ -177,6 +171,42 @@ int getEnemyCount(void) {
 #include <fstream>
 #include <unistd.h>
 using namespace std;
+
+const int logical_width = SCREEN_ORTHO_WIDTH; // Your target resolution
+const int logical_height = SCREEN_ORTHO_HEIGHT;
+
+int viewport_w, viewport_h;
+int viewport_x, viewport_y;
+int win_width, win_height;
+void letterbox_init() {
+
+SDL_GL_GetDrawableSize(window, &win_width, &win_height);
+cout << win_width << "x"<<win_height << endl;
+
+// Calculate aspect ratios
+float target_aspect = (float)logical_width / (float)logical_height;
+float window_aspect = (float)win_width / (float)win_height;
+cout << target_aspect << " vs. " << window_aspect << endl;
+
+
+if (window_aspect > target_aspect) {
+    // Pillarbox
+    viewport_h = win_height;
+    viewport_w = (int)(win_height * target_aspect);
+    viewport_x = (win_width - viewport_w) / 2;
+    viewport_y = 0;
+		cout << "pillarbox" << endl;
+} else {
+    // Letterbox
+    viewport_w = win_width;
+    viewport_h = (int)(win_width / target_aspect);
+    viewport_x = 0;
+    viewport_y = (win_height - viewport_h) / 2;
+		cout << "letterbox" << endl;
+}
+
+
+}
 
 bool init() {
 	
@@ -243,21 +273,29 @@ chdir(osxpath);
 	//glViewport(0,0,SCREEN_WIDTH,SCREEN_HEIGHT);
 	//glViewport(0,0,640,480);
 	// DO I NEED: 
-	window = SDL_CreateWindow("Detritus", 0, 0, SCREEN_WIDTH_NATIVE, SCREEN_HEIGHT_NATIVE, SDL_WINDOW_OPENGL);
+	    // Get the desktop display mode for the first display (index 0)
+	    SDL_DisplayMode displayMode;
+
+    if (SDL_GetDesktopDisplayMode(0, &displayMode) != 0) {
+        // Handle error
+        SDL_Quit();
+        return 1;
+    }
+
+	window = SDL_CreateWindow("Detritus", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, displayMode.w, displayMode.h, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP);
 	if (NULL == window) {
-		printf("NULL WINDOW\n");
+		cerr << "NULL WINDOW" << endl;
 		return EXIT_FAILURE;
 	}
-	printf("FIX THIS - SCREEN WIDTH/HEIGHT HOW?\n");
 
 	SDL_GLContext gl_context = SDL_GL_CreateContext(window);
 	if (nullptr == gl_context) {
-		printf("NULL GL CONTEXT\n");
+		cerr << "NULL GL CONTEXT" << endl;
 		return EXIT_FAILURE;
 	}
 
     if (SDL_GL_SetSwapInterval(1) < 0) {
-			printf("SDL VSYNC NOT USPPORTED\n");
+			cerr << "SDL VSYNC NOT SUPPORTED" << endl;
 		}
 
 
@@ -305,8 +343,9 @@ chdir(osxpath);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);			// Set Perspective Calculations To Most Accurate
 
 	//call reshape gl...
-	printf("TODO: FIX NATIVE\n");
-	ReshapeGL(SCREEN_WIDTH_NATIVE,SCREEN_HEIGHT_NATIVE);
+	letterbox_init();
+	//ReshapeGL(SCREEN_WIDTH_NATIVE,SCREEN_HEIGHT_NATIVE);
+	ReshapeGL(win_width,win_height);
 //char pwd[200];
 //getwd(pwd);
 //cerr << pwd << " ... argh?" << endl;
@@ -581,12 +620,13 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[] )  {
 				case SDL_KEYDOWN:
 					if (mode == MODE_NEWHIGHSCORE) {
 						//char key = event.text.text; printf("TODO: this was .unicode, should it be event.text.text? case SDL_TEXTINPUT? SDL_StartTextINput()?\n");
-						char key = event.text.text[0]; printf("TODO: this was .unicode, should it be event.text.text? case SDL_TEXTINPUT? SDL_StartTextINput()?\n");
+						//char key = event.text.text[0]; printf("TODO: this was .unicode, should it be event.text.text? case SDL_TEXTINPUT? SDL_StartTextINput()?\n");
 						if (event.key.keysym.sym == SDLK_LSHIFT || event.key.keysym.sym == SDLK_RSHIFT) continue;
 						if (event.key.keysym.sym == SDLK_LCTRL || event.key.keysym.sym == SDLK_RCTRL) continue;
 						if (event.key.keysym.sym == SDLK_LGUI || event.key.keysym.sym == SDLK_RGUI) continue;
 						if (event.key.keysym.sym == SDLK_LALT || event.key.keysym.sym == SDLK_RALT) continue;
 						int len = strlen(new_hs_name);
+						char key = event.key.keysym.sym; printf("TODO: this was .unicode, should it be event.text.text? case SDL_TEXTINPUT? SDL_StartTextINput()?\n");
 						if (key == 13 || key == 10) {
 							if (len > 0) {
 								scores->addScore(new_hs_name,score);
@@ -602,12 +642,16 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[] )  {
 							if (len == 0) {
 								startSound(SOUND_THRUSTFADE);
 							} else {
+							cout << "delete " << key << endl;
 								new_hs_name[len-1] = 0;
 								startSound(SOUND_BULLET);
 							}
-						} else if (len == 32 || !isprint(key)) {
+						} else if (len == 32 || !isprint((char)key)) {
+							cout << len << endl;
+							cout << (char)key << endl;
 							startSound(SOUND_THRUSTFADE);
 						} else {
+							cout << "GOOD? " << key << endl;
 							new_hs_name[len] = key;
 							new_hs_name[len+1] = 0;
 							startSound(SOUND_BULLET);
@@ -1178,7 +1222,8 @@ void Draw2D([[maybe_unused]] SDL_Window *W) {
 	//change the perspective to align with the window inorder to use 
 	//more natrual exact window coords.
 
-	glOrtho(0,SCREEN_ORTHO_WIDTH,SCREEN_ORTHO_HEIGHT,0,200,-200);
+	//glOrtho(0,SCREEN_ORTHO_WIDTH,SCREEN_ORTHO_HEIGHT,0,200,-200);
+	glOrtho(0,logical_width,logical_height,0,200,-200);
 
 	//clear Modelview matrix for new 2d drawing commands
 	glMatrixMode(GL_MODELVIEW);
@@ -1522,7 +1567,8 @@ void Draw2D([[maybe_unused]] SDL_Window *W) {
 
 // Reshape The Window When It's Moved Or Resized
 void ReshapeGL(int width, int height) {
-	glViewport(0,0,(GLsizei)(width),(GLsizei)(height));// Reset The Current Viewport
+	//glViewport(0,0,(GLsizei)(width),(GLsizei)(height));// Reset The Current Viewport
+	glViewport(viewport_x,viewport_y,(GLsizei)(viewport_w),(GLsizei)(viewport_h));// Reset The Current Viewport
 	glMatrixMode(GL_PROJECTION);// Select The Projection Matrix
 	glLoadIdentity();// Reset The Projection Matrix */
 

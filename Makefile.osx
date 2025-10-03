@@ -1,6 +1,11 @@
 # -----------------------
 # Detritus macOS Makefile (SDL2, arm64)
 # -----------------------
+#
+-include secrets.mk
+ifndef APP_PASS
+$(error APP_PASS not set; please create secrets.mk with APP_PASS := your_password)
+endif
 
 VERSION      := 1.0.7
 EXECUTABLE   := detritus
